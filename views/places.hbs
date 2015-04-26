@@ -1,0 +1,29 @@
+<div ng-controller="placesController">
+	<h1 class='text-center'>My Places</h1>
+	<div class='row container'>
+		<div class='text-right'>
+			<button type="button" id="delete-button" disabled="" class='btn btn-danger'>Delete</button>
+			<button type="button" id="share-button" disabled="" class='btn btn-primary'>Share</button>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-8 col-md-offset-2'>
+			<table class='table table-striped'>
+				<thead>
+					<th>S. No.</th>
+					<th>Name of Place</th>
+					<th>Address</th>
+					<th>Select</th>
+				</thead>	
+				<tbody>
+					<tr ng-repeat="place in places">
+						<td ng-bind="\{{ $index + 1}}"></td>
+						<td><a ng-href="\{{place.url}}"><span ng-bind="place.name"></span></a></td>
+						<td><span ng-bind="place.address"></span></td>
+						<td><input type='checkbox' class='' ng-click="checkPlaces()" ng-model="place.checked"/></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

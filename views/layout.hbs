@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tracklabs - {{title}}</title>
+    <!-- Stylesheets -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    <!-- Preload Scripts-->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyDQ67xo6fpZ_6oS3Shxpr32F4_1W7WvaXc"></script>
+  </head>
+  <body>
+    <nav class='navbar navbar-default'>
+      <div class='container-fluid'>
+        <div class='navbar-header'>
+          <button type='button' class='navbar-toggle collapsed' data-toggle="collapse" data-target="#navbar-body">
+            <span class='sr-only'>Toggle navigation</span>
+            <span class='icon-bar'></span>
+            <span class='icon-bar'></span>
+            <span class='icon-bar'></span>
+          </button>
+          <a class='navbar-brand' href='/'>Tracklabs</a>
+        </div>
+        <div class='collapse navbar-collapse' id='navbar-body'>
+          <ul class='nav navbar-nav'>
+          </ul>
+          <ul class='nav navbar-nav navbar-right'>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Sign Up</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {{#if main}}
+    <ul class='nav nav-tabs'>
+      <li role='presentation' {{#if home}} class='active' {{/if}}><a href='/'>Home</a></li>
+      <li role='presentation' {{#if places}} class='active' {{/if}}><a href='/places'>My Places</a></li>
+    </ul>
+    {{/if}}
+    <section id='content' class='container-fluid' ng-app='tracklabs'>
+      {{{body}}}
+    </section>
+
+    <!-- Javascripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/javascripts/main.js"></script>
+  </body>
+</html>

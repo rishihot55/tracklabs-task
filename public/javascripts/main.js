@@ -1,17 +1,23 @@
-var geocoder;
-var map;
+
+
 //var autocomplete;
 var App = angular.module('tracklabs',[]);
 
 App.controller('placesController', function($scope, $http, $document) {
 	$document.ready(function() {
-		geocoder = new google.maps.Geocoder();
+		var map;
 		var address = document.getElementById("address");
 		var mapOptions = {
     		center: { lat: -34.397, lng: 150.644},
         	zoom: 15
     	};
     	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    	var marker = new google.maps.Marker({ 
+			map: map, 
+			position: mapOptions.center,
+			animation: google.maps.Animation.DROP,
+		});
+
 		autocomplete = new google.maps.places.Autocomplete(address);
     	autocomplete.bindTo('bounds', map);
     	google.maps.event.addListener(autocomplete, 'place_changed', function() {
@@ -27,16 +33,29 @@ App.controller('placesController', function($scope, $http, $document) {
 					name: place.name,
 					address: place.formatted_address,
 				};
-				map.setCenter(place.geometry.location);
-				var marker = new google.maps.Marker({ 
-					map: map, 
-					position: place.geometry.location 
-				});
-				$scope.place_loaded = true;
 			});
+			var contentString = '<div id="content">'+
+				'<h4 class="text-center">Place Info</h4>'+
+				'<p>Name: '+ place.name + '</p>'+
+				'<p>Address' + place.formatted_address + '</p>'+
+				'<div class="text-center">'+
+				'<button type="button">Add to My Places</button>'+
+				'<button type="button">Share</button>'+
+				'</div>'+
+				'</div>';
+			var infowindow = new google.maps.InfoWindow({
+				content: contentString
+			})
 
+			map.setCenter(place.geometry.location);
+			marker.setPosition(place.geometry.location);
+
+			google.maps.event.addListener(marker, 'click', function() {
+    			infowindow.open(map,marker);
+  			});
 		});
 	});
+
 	$scope.places = [{
 		name: "Cream Center",
 		url: "#testurl",
@@ -47,31 +66,6 @@ App.controller('placesController', function($scope, $http, $document) {
 		address: "Best Pizza",
 	}];
 
-	$scope.place_loaded = false;
-	/*
-	$scope.trackLocation = function(address) {
-		if (address !== undefined && address !== null)
-		{
-			if (address != $("#address").val())
-				address = $("#address").val();
-			alert("Address: " + address);
-			geocoder.geocode( {'address' : address}, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK) {
-					map.setCenter(results[0].geometry.location);
-					var marker = new google.maps.Marker({
-						map: map,
-						position: results[0].geometry.location,
-					});
-					$scope.$apply(function(){
-						$scope.place_loaded = true;
-					});
-				} else {
-					alert("Could not geocode this location!");
-				}
-			});
-		}
-	};
-	*/
 	$scope.checkPlaces = function() {
 		for (var i = 0 ; i < $scope.places.length ; i++)
 		{

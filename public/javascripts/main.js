@@ -6,11 +6,21 @@ var App = angular.module('tracklabs',[]);
 App.controller('placesController', function($scope, $http, $document) {
 	$document.ready(function() {
 		var map;
+		var infowindow;
 		var address = document.getElementById("address");
 		var mapOptions = {
     		center: { lat: -34.397, lng: 150.644},
         	zoom: 15
     	};
+
+    	var contentString = "<div id='content'>"+
+    		"<h4>Place Info</h4>"+
+    		"<p>Please search for a place!</p>"+
+    		"</div>";
+
+    	infowindow = new google.maps.InfoWindow({
+				content: contentString
+		});
     	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     	var marker = new google.maps.Marker({ 
 			map: map, 
@@ -37,19 +47,15 @@ App.controller('placesController', function($scope, $http, $document) {
 			var contentString = '<div id="content">'+
 				'<h4 class="text-center">Place Info</h4>'+
 				'<p>Name: '+ place.name + '</p>'+
-				'<p>Address' + place.formatted_address + '</p>'+
+				'<p>Address: ' + place.formatted_address + '</p>'+
 				'<div class="text-center">'+
 				'<button type="button">Add to My Places</button>'+
 				'<button type="button">Share</button>'+
 				'</div>'+
 				'</div>';
-			var infowindow = new google.maps.InfoWindow({
-				content: contentString
-			})
-
 			map.setCenter(place.geometry.location);
 			marker.setPosition(place.geometry.location);
-
+			infowindow.setContent(contentString);
 			google.maps.event.addListener(marker, 'click', function() {
     			infowindow.open(map,marker);
   			});

@@ -16,6 +16,15 @@ router.get('/login', function(req, res, next) {
 	});	
 });
 
+router.post('/login', function(req, res, next) {
+	var user = require('../json_data/user_data.json');
+	if (req.body.email == user[0].email && req.body.password == user[0].password)
+	{
+		//User is logged in
+		console.log("Successfully logged in!");
+		res.redirect('/');
+	}
+});
 router.get('/places', function(req, res, next) {
 	res.render('places', {
 		title: 'My Places',

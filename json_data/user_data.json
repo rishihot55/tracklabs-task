@@ -1,0 +1,16 @@
+[
+	{
+		"id" : "1",
+		"name" : "Rishi Rajasekaran",
+		"email" : "rajasekaran.rishi@gmail.com",
+		"password" : "testpass", 
+		"dob" : "1995-10-7"
+	},
+	{
+		"id" : "2",
+		"name" : "Test User",
+		"email" : "test@gmail.com",
+		"password" : "testpass",
+		"dob" : "2015-4-29"
+	}
+]

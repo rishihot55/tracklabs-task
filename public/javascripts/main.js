@@ -85,6 +85,18 @@ App.controller('placesController', function($scope, $http, $document) {
 		$("#delete-button").prop("disabled", true);
 		$("#share-button").prop("disabled", true);
 	};
+
+	$scope.deletePlaces = function() {
+		for (var i = 0 ; i < $scope.places.length ; i++)
+		{
+			if ($scope.places[i].checked == true)
+			{
+				$scope.places.splice(i,1);
+				i--;
+				continue;
+			}
+		}
+	};
 });
 App.directive('ngEnter', function() {
 	return function (scope, element, attrs) {

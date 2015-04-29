@@ -6,6 +6,7 @@ router.get('/', function(req, res, next) {
 	var user = require('../json_data/user_data.json');
 	if (typeof req.app.get('session').user !== 'undefined')
 	{
+		//Takes the user to the landing page.
 		if (req.app.get('session').user.email == user[0].email)
 		{
 			res.render('home', {
@@ -19,21 +20,27 @@ router.get('/', function(req, res, next) {
 	}
 	else
 	{
+		var message = req.app.get('session').message;
 		res.render('index', { 
   			title: 'Home',
+  			messageSet: true,
+  			message: message,
   			home: true,
   		});
+  		delete req.app.get('session').message;
 	}
 });
 
 router.get('/login', function(req, res, next) {
 	if (typeof req.app.get('session').message !== 'undefined')
 	{
+		var message = req.app.get('session').message;
 		res.render('login', {
 			title: 'Login',
 			messageSet: true,
-			message: req.app.get('session').message,
+			message: message,
 		});
+		delete req.app.get('session').message;
 	}
 	else
 	{
@@ -54,6 +61,12 @@ router.post('/login', function(req, res, next) {
 		req.app.get('session').user = user[0];
 		res.redirect('/');
 	}
+});
+
+router.get('/logout', function(req, res, next) {
+	delete req.app.get('session').user;
+	req.app.get('session').message = "You have been logged out successfully!";
+	res.redirect('/');
 });
 router.get('/places', function(req, res, next) {
 	res.render('places', {

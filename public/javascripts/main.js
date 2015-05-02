@@ -3,7 +3,7 @@
 //var autocomplete;
 var App = angular.module('tracklabs',[]);
 
-App.controller('placesController', function($scope, $http, $document) {
+App.controller('placesController', function($scope, $http, $document, $window) {
 	$document.ready(function() {
 		var map;
 		var infowindow;
@@ -48,6 +48,8 @@ App.controller('placesController', function($scope, $http, $document) {
 				'<h4 class="text-center">Place Info</h4>'+
 				'<p>Name: '+ place.name + '</p>'+
 				'<p>Address: ' + place.formatted_address + '</p>'+
+				'<p>Lat: ' + place.geometry.location.A + '</p>'+
+				'<p>Long:' + place.geometry.location.F + '</p>'+
 				'<div class="text-center">'+
 				'<button type="button">Add to My Places</button>'+
 				'<button type="button">Share</button>'+
@@ -64,11 +66,11 @@ App.controller('placesController', function($scope, $http, $document) {
 
 	$scope.places = [{
 		name: "Cream Center",
-		url: "#testurl",
+		url: "http://example",
 		address: "Premium Veg. Restaurant",
 	}, {
 		name: "Dominos Pizza",
-		url: "#testurl",
+		url: "http://example",
 		address: "Best Pizza",
 	}];
 
@@ -87,15 +89,45 @@ App.controller('placesController', function($scope, $http, $document) {
 	};
 
 	$scope.deletePlaces = function() {
+		var placeList = "";
+		var count = 1;
 		for (var i = 0 ; i < $scope.places.length ; i++)
 		{
 			if ($scope.places[i].checked == true)
 			{
-				$scope.places.splice(i,1);
-				i--;
-				continue;
+				placeList += count + ". " + $scope.places[i].name + "\n";
+				count++;
 			}
 		}
+
+		if(confirm("Are you sure you want to delete the following places?\n" + placeList))
+		{
+			for (var i = 0 ; i < $scope.places.length ; i++)
+			{
+				if ($scope.places[i].checked == true)
+				{
+					$scope.places.splice(i,1);
+					i--;
+					continue;
+				}
+			}
+		}
+	};
+
+	$scope.sharePlaces = function() {
+		var urlString = "I want to share the following places with you:%0A";
+		var count = 1;
+		for (var i = 0 ; i < $scope.places.length ; i++)
+		{
+			if ($scope.places[i].checked == true)
+			{
+				urlString += count + ". " + $scope.places[i].name + " - " + $scope.places[i].url + "%0A";
+			}
+		}
+
+		var gmailURL = "https://mail.google.com/mail/u/0/?view=cm&fs=1&su=" + "Tracklabs location shared" + "&body="+ urlString +"&tf=1";
+		var encodedURL = encodeURI(gmailURL);
+		$window.open(gmailURL);
 	};
 });
 App.directive('ngEnter', function() {

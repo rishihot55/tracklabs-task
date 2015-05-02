@@ -179,11 +179,23 @@ router.get('/places', function(req, res, next) {
 router.get('/register', function(req, res, next) {
 	res.render('register', {
 		title: 'Register',
+		message: req.app.get('session').message,
 	});
+	delete req.app.get('session').message;
 });
 
 router.post('/register', function(req, res, next) {
-	var isValidated = validator.isEmail(req.body.email) && validator.isDate(req.body.dob) && (req.body.password == req.body.confirm_password);
+	var emailCheck = validator.isEmail(req.body.email);
+	var dateCheck = validator.isDate(req.body.dob);
+	var passwordCheck = (req.body.password == req.body.confirm_password);
+	var findcheck = false;
+	User.find({where : {email : req.body.email }})
+	.then(function(user) {
+		//If no user is found, then validation complete
+		if (!user)
+			findcheck = true;
+	});
+	var isValidated = emailCheck && dateCheck &&  passwordCheck && findcheck;
 	var name = validator.escape(req.body.name);
 
 	if (isValidated && name.length > 0)
@@ -197,6 +209,20 @@ router.post('/register', function(req, res, next) {
 		.then(function(){
 			res.redirect('/login');
 		})
+	}
+	else
+	{
+		var errors = "You have the following errors:\n";
+		if (!emailCheck)
+			errors += "Email is invalid\n";
+		if (!dateCheck)
+			errors += "Date is invalid\n";
+		if (!passwordCheck)
+			errors += "Passwords do not match\n";
+		if (!findcheck)
+			errors += "User account already exists!\n";
+		req.app.get('session').message = errors;
+		res.redirect('/register');
 	}
 });
 

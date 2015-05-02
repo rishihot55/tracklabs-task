@@ -129,6 +129,12 @@ router.post('/place/add', function(req, res, next) {
 	}
 });
 
+router.get('/place', function(req, res, next) {
+	Place.findAll({ where : { UserId : req.app.get('session').user.id }})
+	.then(function(places) {
+		res.json({ places: places });
+	});
+});
 router.get('/places', function(req, res, next) {
 	var user = require('../json_data/user_data.json');
 	if (typeof req.app.get('session').user !== 'undefined')
@@ -136,6 +142,8 @@ router.get('/places', function(req, res, next) {
 		res.render('places', {
 			title: 'My Places',
 			places: true,
+			loggedIn: true,
+			user: req.app.get('session').user,
 			main: true,
 		});
 	}
@@ -175,4 +183,5 @@ router.post('/register', function(req, res, next) {
 		})
 	}
 });
+
 module.exports = router;

@@ -6,6 +6,11 @@
 			<button type="button" id="share-button" disabled=""  ng-click="sharePlaces()" class='btn btn-primary'>Share</button>
 		</div>
 	</div>
+	<div class='row container'>
+		<div class='col-md-3 col-md-offset-2'>
+			<input type='text' ng-model='placeName' class='form-control' placeholder="Search for a place..."/>
+		</div>
+	</div>
 	<div class='row'>
 		<div class='col-md-8 col-md-offset-2'>
 			<table class='table table-striped'>
@@ -13,13 +18,17 @@
 					<th>S. No.</th>
 					<th>Name of Place</th>
 					<th>Address</th>
+					<th>Latitude</th>
+					<th>Longitude</th>
 					<th>Select</th>
 				</thead>	
 				<tbody>
-					<tr ng-repeat="place in places">
+					<tr ng-repeat="place in places | filter: placeName">
 						<td ng-bind="\{{ $index + 1}}"></td>
-						<td><a ng-href="\{{place.url}}"><span ng-bind="place.name"></span></a></td>
+						<td><a ng-href="place/\{{place.place_id}}"><span ng-bind="place.name"></span></a></td>
 						<td><span ng-bind="place.address"></span></td>
+						<td><span ng-bind="place.latitude"></span></td>
+						<td><span ng-bind="place.longitude"></span></td>
 						<td><input type='checkbox' class='' ng-click="checkPlaces()" ng-model="place.checked"/></td>
 					</tr>
 				</tbody>

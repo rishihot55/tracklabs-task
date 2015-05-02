@@ -99,18 +99,17 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 				$("#add-place").text("Place exists!");
 				$("#add-place").prop("disabled", true);
 			}
+			else
+			{
+				alert("Place couldn't be added. Please try again!");
+			}
 		});
 	};
 
-	$scope.places = [{
-		name: "Cream Center",
-		url: "http://example",
-		address: "Premium Veg. Restaurant",
-	}, {
-		name: "Dominos Pizza",
-		url: "http://example",
-		address: "Best Pizza",
-	}];
+	$http.get("/place")
+	.success(function(res) {
+		$scope.places = res.places;
+	});
 
 	$scope.checkPlaces = function() {
 		for (var i = 0 ; i < $scope.places.length ; i++) {

@@ -4,9 +4,12 @@
 var App = angular.module('tracklabs',[]);
 
 App.controller('placesController', function($scope, $http, $document, $window, $compile) {
-	$document.ready(function() {
-		var map;
-		var infowindow;
+	var map;
+	var infowindow;
+	var marker;
+
+	$scope.initMap = function() {
+
 		var address = document.getElementById("address");
 		var mapOptions = {
     		center: { lat: -34.397, lng: 150.644},
@@ -22,7 +25,7 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 				content: contentString
 		});
     	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    	var marker = new google.maps.Marker({ 
+    	marker = new google.maps.Marker({ 
 			map: map, 
 			position: mapOptions.center,
 			animation: google.maps.Animation.DROP,
@@ -71,7 +74,7 @@ App.controller('placesController', function($scope, $http, $document, $window, $
     			infowindow.open(map,marker);
   			});
 		});
-	});
+	};
 
 	$scope.addPlace = function() {
 		var place = {
@@ -106,10 +109,43 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 		});
 	};
 
-	$http.get("/place")
-	.success(function(res) {
-		$scope.places = res.places;
-	});
+	$scope.findPlace = function(place_id) {
+		$scope.initMap();
+		var service = new google.maps.places.PlacesService(map);
+		var request = { placeId: place_id };
+		service.getDetails(request, function(place, status) {
+			if (status == google.maps.places.PlacesServiceStatus.OK) {
+				var info = "<div id='infowindow-content'>"+
+				"<h4 class='text-center'>Place Info</h4>"+
+				"<p>Name: " + place.name + "</p>"+
+				"<p>Address: " + place.formatted_address + "</p>"+ 
+				"<p>Lat: " + place.geometry.location.lat() + "</p>"+
+				"<p>Long: " + place.geometry.location.lng() + "</p>"+
+				"<div class='text-center'>"+
+				"<button type='button' id='add-place' ng-click='addPlace()'>Add to My Places</button>"+
+				"<button type='button'>Share</button>"+
+				"</div>"+
+				"</div>";
+			
+				//The html needs to be compiled for angular directives to work
+				var compiled = $compile(info)($scope);
+				map.setCenter(place.geometry.location);
+				marker.setPosition(place.geometry.location);
+				infowindow.setContent(compiled[0]);
+				google.maps.event.addListener(marker, 'click', function() {
+    				infowindow.open(map,marker);
+  				});
+  			}
+		});
+	};
+
+	$scope.getPlaces = function() {
+		$http.get("/place")
+		.success(function(res) {
+			$scope.places = res.places;
+		});
+	}
+	
 
 	$scope.checkPlaces = function() {
 		for (var i = 0 ; i < $scope.places.length ; i++) {
@@ -165,9 +201,7 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 		$window.open(gmailURL);
 	};
 });
-App.controller('userController', function() {
 
-});
 App.directive('ngEnter', function() {
 	return function (scope, element, attrs) {
 		element.bind("keydown keypress", function(event) {

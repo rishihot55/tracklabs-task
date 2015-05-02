@@ -1,4 +1,4 @@
-<div ng-controller="placesController">
+<div ng-controller="placesController" ng-init="getPlaces()">
 	<h1 class='text-center'>My Places</h1>
 	<div class='row container'>
 		<div class='text-right'>
@@ -25,7 +25,7 @@
 				<tbody>
 					<tr ng-repeat="place in places | filter: placeName">
 						<td ng-bind="\{{ $index + 1}}"></td>
-						<td><a ng-href="place/\{{place.place_id}}"><span ng-bind="place.name"></span></a></td>
+						<td><a ng-href="http://tracklabs.com/place/\{{place.place_id}}"><span ng-bind="place.name"></span></a></td>
 						<td><span ng-bind="place.address"></span></td>
 						<td><span ng-bind="place.latitude"></span></td>
 						<td><span ng-bind="place.longitude"></span></td>

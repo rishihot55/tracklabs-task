@@ -66,8 +66,10 @@ router.get('/login', function(req, res, next) {
 			title: 'Login',
 			messageSet: true,
 			message: message,
+			error: req.app.get('session').error,
 		});
 		delete req.app.get('session').message;
+		delete req.app.get('session').error;
 	}
 	else
 	{
@@ -79,14 +81,19 @@ router.get('/login', function(req, res, next) {
 });
 
 router.post('/login', function(req, res, next) {
-	//Using user 0 as an example login case
 	User.find({where : { email: req.body.email }}).then(function(user) {
+		if (!user)
+		{
+			req.app.get('session').message = "Your credentials are incorrect!";
+			req.app.get('session').error = true;
+			res.redirect('/login');
+		}
 		if (bcrypt.compareSync(req.body.password, user.password))
 		{
 			console.log("Successfully logged in!");
 			req.app.get('session').user = user;
-			res.redirect('/');
 		}
+		res.redirect('/');
 	});
 });
 
@@ -133,6 +140,15 @@ router.get('/place', function(req, res, next) {
 	Place.findAll({ where : { UserId : req.app.get('session').user.id }})
 	.then(function(places) {
 		res.json({ places: places });
+	});
+});
+
+router.get('/find/:place_id', function(req, res, next) {
+	res.render('locator', {
+		title: 'Show Location',
+		home: true,
+		main: false,
+		place_id: req.params.place_id,
 	});
 });
 router.get('/places', function(req, res, next) {

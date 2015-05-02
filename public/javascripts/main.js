@@ -35,7 +35,9 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 			if (place.length == 0) {
 				alert("Place not found!");
 			}
+
 			console.log(place);
+
 			var new_address = place.name + ", " + place.address_components[0].long_name + ", " + place.address_components[1].long_name + ", " + place.address_components[2].long_name;
 			$scope.address = new_address;
 			$scope.$apply(function() {
@@ -44,10 +46,9 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 					address: place.formatted_address,
 					lat: place.geometry.location.lat(),
 					long: place.geometry.location.lng(),
+					place_id: place.place_id,
 				};
 			});
-
-
 
 			var info = "<div id='infowindow-content'>"+
 			"<h4 class='text-center'>Place Info</h4>"+
@@ -56,14 +57,13 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 			"<p>Lat: " + place.geometry.location.lat() + "</p>"+
 			"<p>Long: " + place.geometry.location.lng() + "</p>"+
 			"<div class='text-center'>"+
-			"<button type='button' ng-click='addPlace()'>Add to My Places</button>"+
+			"<button type='button' id='add-place' ng-click='addPlace()'>Add to My Places</button>"+
 			"<button type='button'>Share</button>"+
 			"</div>"+
 			"</div>";
 
 			//The html needs to be compiled for angular directives to work
 			var compiled = $compile(info)($scope);
-			alert(compiled.html());
 			map.setCenter(place.geometry.location);
 			marker.setPosition(place.geometry.location);
 			infowindow.setContent(compiled[0]);
@@ -72,9 +72,36 @@ App.controller('placesController', function($scope, $http, $document, $window, $
   			});
 		});
 	});
+
 	$scope.addPlace = function() {
-		alert("Place added!");
+		var place = {
+			name: $scope.place.name,
+			address: $scope.place.address,
+			lat: $scope.place.lat,
+			long: $scope.place.long,
+			place_id: $scope.place.place_id,
+		};
+
+		$http({
+			url : "/place/add",
+			data: {
+				place,
+			},
+			method: "POST"
+		})
+		.success(function(){ 
+			$("#add-place").text("Place added!");
+			$("#add-place").prop("disabled", true);
+		})
+		.error(function(res, status) {
+			if(res.place_exists == true)
+			{
+				$("#add-place").text("Place exists!");
+				$("#add-place").prop("disabled", true);
+			}
+		});
 	};
+
 	$scope.places = [{
 		name: "Cream Center",
 		url: "http://example",
@@ -138,6 +165,9 @@ App.controller('placesController', function($scope, $http, $document, $window, $
 		var encodedURL = encodeURI(gmailURL);
 		$window.open(gmailURL);
 	};
+});
+App.controller('userController', function() {
+
 });
 App.directive('ngEnter', function() {
 	return function (scope, element, attrs) {

@@ -3,7 +3,7 @@
 //var autocomplete;
 var App = angular.module('tracklabs',[]);
 
-App.controller('placesController', function($scope, $http, $document, $window) {
+App.controller('placesController', function($scope, $http, $document, $window, $compile) {
 	$document.ready(function() {
 		var map;
 		var infowindow;
@@ -38,32 +38,43 @@ App.controller('placesController', function($scope, $http, $document, $window) {
 			console.log(place);
 			var new_address = place.name + ", " + place.address_components[0].long_name + ", " + place.address_components[1].long_name + ", " + place.address_components[2].long_name;
 			$scope.address = new_address;
-			$scope.$apply(function(){
+			$scope.$apply(function() {
 				$scope.place = {
 					name: place.name,
 					address: place.formatted_address,
+					lat: place.geometry.location.lat(),
+					long: place.geometry.location.lng(),
 				};
 			});
-			var contentString = '<div id="content">'+
-				'<h4 class="text-center">Place Info</h4>'+
-				'<p>Name: '+ place.name + '</p>'+
-				'<p>Address: ' + place.formatted_address + '</p>'+
-				'<p>Lat: ' + place.geometry.location.A + '</p>'+
-				'<p>Long:' + place.geometry.location.F + '</p>'+
-				'<div class="text-center">'+
-				'<button type="button">Add to My Places</button>'+
-				'<button type="button">Share</button>'+
-				'</div>'+
-				'</div>';
+
+
+
+			var info = "<div id='infowindow-content'>"+
+			"<h4 class='text-center'>Place Info</h4>"+
+			"<p>Name: " + place.name + "</p>"+
+			"<p>Address: " + place.formatted_address + "</p>"+ 
+			"<p>Lat: " + place.geometry.location.lat() + "</p>"+
+			"<p>Long: " + place.geometry.location.lng() + "</p>"+
+			"<div class='text-center'>"+
+			"<button type='button' ng-click='addPlace()'>Add to My Places</button>"+
+			"<button type='button'>Share</button>"+
+			"</div>"+
+			"</div>";
+
+			//The html needs to be compiled for angular directives to work
+			var compiled = $compile(info)($scope);
+			alert(compiled.html());
 			map.setCenter(place.geometry.location);
 			marker.setPosition(place.geometry.location);
-			infowindow.setContent(contentString);
+			infowindow.setContent(compiled[0]);
 			google.maps.event.addListener(marker, 'click', function() {
     			infowindow.open(map,marker);
   			});
 		});
 	});
-
+	$scope.addPlace = function() {
+		alert("Place added!");
+	};
 	$scope.places = [{
 		name: "Cream Center",
 		url: "http://example",
@@ -75,10 +86,8 @@ App.controller('placesController', function($scope, $http, $document, $window) {
 	}];
 
 	$scope.checkPlaces = function() {
-		for (var i = 0 ; i < $scope.places.length ; i++)
-		{
-			if ($scope.places[i].checked == true)
-			{
+		for (var i = 0 ; i < $scope.places.length ; i++) {
+			if ($scope.places[i].checked == true) {
 				$("#delete-button").prop("disabled",false);
 				$("#share-button").prop("disabled", false);
 				return;

@@ -69,11 +69,26 @@ router.get('/logout', function(req, res, next) {
 	res.redirect('/');
 });
 router.get('/places', function(req, res, next) {
-	res.render('places', {
-		title: 'My Places',
-		places: true,
-		main: true,
-	});
+	var user = require('../json_data/user_data.json');
+	if (typeof req.app.get('session').user !== 'undefined')
+	{
+		res.render('places', {
+			title: 'My Places',
+			places: true,
+			main: true,
+		});
+	}
+	else
+	{
+		var message = req.app.get('session').message;
+		res.render('index', { 
+  			title: 'Home',
+  			messageSet: true,
+  			message: message,
+  			home: true,
+  		});
+  		delete req.app.get('session').message;
+	}
 });
 
 router.get('/register', function(req, res, next) {
